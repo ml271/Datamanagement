@@ -8,7 +8,7 @@ library(data.table)
 
 tick <- Sys.time()
 Sys.setenv(TZ = "UTC")
-setwd("O:/PROJEKT/NIEDER/MEßNETZ/")
+setwd("O:/PROJEKT/NIEDER/MEÃŸNETZ/")
 
 ################################### functions ##############################################
 source("W:/Datenbank Level2/Scripts/functions/write.fwf2.R")
@@ -67,7 +67,7 @@ odbcCloseAll()
   df.alt %>%  filter( Dat_Zeit_utc == "2001-10-22 00:00:00 UTC")
   sum(duplicated(df.alt$Dat_Zeit))
   # 4. check data consistency
-  table(df.alt$AL_Kanäle)
+  table(df.alt$AL_Kan?le)
 
             
 ## Data Manipulation
@@ -120,7 +120,7 @@ odbcCloseAll()
   df.blau %>%  filter( Dat_Zeit_utc == "2001-10-22 00:00:00 UTC")
   sum(duplicated(df.blau$Dat_Zeit))
   # # check data consistense
-  table(df.blau$Kanäle)
+  table(df.blau$Kan?le)
 
 
 ## Data Manipulation
@@ -170,7 +170,7 @@ odbcCloseAll()
   df.mud %>%  filter( Dat_Zeit_utc == "2001-10-22 00:00:00 UTC")
   sum(duplicated(df.mud$Dat_Zeit))
   # # check data consistense
-  table(df.mud$Kanäle)
+  table(df.mud$Kan?le)
 
 
 ## Data Manipulation
@@ -192,8 +192,60 @@ odbcCloseAll()
 ## Dataexport as .dat (txt) in Delta T Loggerformat
 # write.fwf2(df.mud4, file="W:/Datenbank Level2/Import DB/Mudau_altendatencombi.dat", year= year(range(df.mud$Dat_Zeit_utc)[1]))
   
+  
+############################## ESSLINGEN #################################
+  
+path.db <- "ESSLINGEN"
+rodbc.connect <- odbcConnectAccess(path.db, DBMSencoding = "latin1")
+## Get data from db
+SQLQuery_och <- paste0(
+  "SELECT * FROM FVA_LoggerTab_Esslingen")
+df.ess <- sqlQuery(rodbc.connect, SQLQuery_och, stringsAsFactors = FALSE ,as.is=T) %>%
+  mutate(Dat_Zeit_utc = ymd_hms(Dat_Zeit, tz="UTC")) %>% # get column with new time format
+  arrange(Dat_Zeit_utc) %>%   collect()
+odbcCloseAll()
 
-############################## OCHSENHAUSE DÜNGERFLÄCHEN #################
+
+  ## Check Data
+  # 1. check duplicated entries
+  dup_check <- sum(duplicated(df.ess$Dat_Zeit_utc))
+  # 2. check for missing data
+  gaps_ess <- check_for_ts_gaps(ts= df.ess$Dat_Zeit, max_diff= 24*60 )
+  class(gaps_ess$Dat_diff)
+  as.difftime(gaps_ess$Dat_diff, format= "%H:%M")
+  as.numeric(gaps_ess$Dat_diff, units = "days")
+  format(gaps_ess$Dat_diff)
+  # check for right date-time format und tz
+  tz(df.ess$Dat_Zeit_utc);  class(df.ess$Dat_Zeit_utc); range(df.ess$Dat_Zeit_utc)
+  df.ess %>%  filter( Dat_Zeit_utc == "2003-10-22 00:00:00 UTC")
+  sum(duplicated(df.ess$Dat_Zeit))
+  # # check data consistense
+  table(df.ess$KanÃ¤le)
+  
+  
+  
+  ## Data Manipulation
+  # 1. check for double entries and remove them
+  if (dup_check != 0){
+    dup_ess <- df.ess[duplicated(df.ess$Dat_Zeit),]
+  }
+  df.ess2 <- df.ess %>%  filter(!duplicated(df.ess$Dat_Zeit_utc))
+  
+  # 2. drop all coloums containing only NA values and non relevant information
+  df.ess3 <- df.ess2[,which(unlist(lapply(df.ess2, function(x) !all(is.na(x)))))] 
+  # %>%
+  # select(-c(Proto_Dat, Dat_Zeit_utc))
+  
+  # 3. write new time coloum
+  df.ess4 <- df.ess3 %>%  
+    mutate("Dat_Zeit" = strftime(df.ess3$Dat_Zeit, format = '%d/%m %H:%M:%S', tz="UTC")) 
+  
+  ## Dataexport as .dat (txt) in Delta T Loggerformat
+  # write.fwf2(df.ess4, file="W:/Datenbank Level2/Import DB/Rosenfeld_altendatencombi.dat", year= year(range(df.ess$Dat_Zeit_utc)[1]))
+  
+
+
+############################## OCHSENHAUSE D?NGERFL?CHEN #################
 
 ## set odbc connection to acces db
 path.db <- "OCHSENHAUSEN"
@@ -223,7 +275,7 @@ odbcCloseAll()
   df.och %>%  filter( Dat_Zeit_utc == "2001-10-22 00:00:00 UTC")
   sum(duplicated(df.och$Dat_Zeit))
   # # check data consistense
-  table(df.och$OC_Kanäle)
+  table(df.och$OC_Kan?le)
   
 
 
@@ -278,7 +330,7 @@ odbcCloseAll()
   df.rsf %>%  filter( Dat_Zeit_utc == "2001-10-22 00:00:00 UTC")
   sum(duplicated(df.rsf$Dat_Zeit))
   # # check data consistense
-  table(df.rsf$Kanäle)
+  table(df.rsf$Kan?le)
 
 
 
@@ -328,7 +380,7 @@ odbcCloseAll()
   df.rot %>%  filter( Dat_Zeit_utc == "2001-10-22 00:00:00 UTC")
   sum(duplicated(df.rot$Dat_Zeit))
   # # check data consistense
-  table(df.rot$RO_Kanäle)
+  table(df.rot$RO_Kan?le)
 
 
 ## Data Manipulation
@@ -377,7 +429,7 @@ odbcCloseAll()
   df.tut %>%  filter( Dat_Zeit_utc == "2001-10-22 00:00:00 UTC")
   sum(duplicated(df.tut$Dat_Zeit))
   # # check data consistense
-  table(df.tut$Kanäle)
+  table(df.tut$Kan?le)
 
 
 ## Data Manipulation
@@ -426,7 +478,7 @@ tz(df.wlz$Dat_Zeit_utc);  class(df.wlz$Dat_Zeit_utc); range(df.wlz$Dat_Zeit_utc)
 df.wlz %>%  filter( Dat_Zeit_utc == "2001-10-22 00:00:00 UTC")
 sum(duplicated(df.wlz$Dat_Zeit))
 # # check data consistense
-table(df.wlz$Kanäle)
+table(df.wlz$Kan?le)
 
 
 ## Data Manipulation
@@ -454,21 +506,21 @@ df.wlz4 <- df.wlz3 %>%
 ## cLOSE ODBC and export data  
 
 
-write.csv2( gaps_alt, file= "W:/Datenbank Level2/Fehler/Lücken_Altensteig_Altdaten_acess.csv")
+write.csv2( gaps_alt, file= "W:/Datenbank Level2/Fehler/L?cken_Altensteig_Altdaten_acess.csv")
 
-write.csv2(gaps_blau, file= "W:/Datenbank Level2/Fehler/Lücken_Blauen_Altdaten_acess.csv")
+write.csv2(gaps_blau, file= "W:/Datenbank Level2/Fehler/L?cken_Blauen_Altdaten_acess.csv")
 
-write.csv2( gaps_mud, file= "W:/Datenbank Level2/Fehler/Lücken_Mudau_Altdaten_acess.csv")
+write.csv2( gaps_mud, file= "W:/Datenbank Level2/Fehler/L?cken_Mudau_Altdaten_acess.csv")
 
-write.csv2( gaps_och, file= "W:/Datenbank Level2/Fehler/Lücken_Ochsenhausen_Altdaten_acess.csv")
+write.csv2( gaps_och, file= "W:/Datenbank Level2/Fehler/L?cken_Ochsenhausen_Altdaten_acess.csv")
 
-write.csv2( gaps_rot, file= "W:/Datenbank Level2/Fehler/Lücken_Rotenfels_Altdaten_acess.csv")
+write.csv2( gaps_rot, file= "W:/Datenbank Level2/Fehler/L?cken_Rotenfels_Altdaten_acess.csv")
 
-write.csv2( gaps_rsf, file= "W:/Datenbank Level2/Fehler/Lücken_Rosenfeld_Altdaten_acess.csv")
+write.csv2( gaps_rsf, file= "W:/Datenbank Level2/Fehler/L?cken_Rosenfeld_Altdaten_acess.csv")
 
-write.csv2( gaps_tut, file= "W:/Datenbank Level2/Fehler/Lücken_Tuttlingen_Altdaten_acess.csv")
+write.csv2( gaps_tut, file= "W:/Datenbank Level2/Fehler/L?cken_Tuttlingen_Altdaten_acess.csv")
 
-write.csv2( gaps_wlz, file= "W:/Datenbank Level2/Fehler/Lücken_Welzheim_Altdaten_acess.csv")
+write.csv2( gaps_wlz, file= "W:/Datenbank Level2/Fehler/L?cken_Welzheim_Altdaten_acess.csv")
 #---------------------------##
   
 
@@ -478,6 +530,9 @@ export_each_year(df = df.alt4, name = "Alt_Bruhberg_combi")
 export_each_year(df = df.blau4, name = "Blauen_combi")
 
 export_each_year(df = df.mud4, name = "Mudau_combi")
+
+export_each_year(df = df.ess4, name = "Esslingen_combi")
+
 
 export_each_year(df = df.och4, name = "Ochsenhausen_combi")
 
