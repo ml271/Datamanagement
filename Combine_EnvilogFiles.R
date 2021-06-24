@@ -9,8 +9,8 @@
 # Dieses script fasst die Envilog Daten aus Esslingen zusammen!
 # Es funktioniert NUR wenn noch KEINE zusammengefasste Datei ertsellt wurde!
 # gegebenenfals muss die die Datei z.B. ES_Level2FI_Envilog_2021_combine.csv
-# zuerst gelöscht werden, bevoir das script korrekt ausgeführt werden kann.
-# oder Zeile 36 ( # tbl <- tbl[-1]) einkommentieren um die Datei auszuließen
+# zuerst gel?scht werden, bevoir das script korrekt ausgef?hrt werden kann.
+# oder Zeile 36 ( # tbl <- tbl[-1]) einkommentieren um die Datei auszulie?en
 
 
 # Zum einlesen in die Level2 Datenbank, bitte folgendes beachten:
@@ -19,8 +19,8 @@
 # Copie&paste: Logger: #D3000C 'Esslingen_Fi_FVA_1' - USP_EXP2 - (CGI) Expander for GP5W - (V2.60, Mai 12 2013)
 
 
-# wähle das jahr das zusammengefasst werden soll
-vch.Year <- 2020
+# w?hle das jahr das zusammengefasst werden soll
+vch.Year <- 2021
 
 
 # load functions and libraries
@@ -30,10 +30,11 @@ library(tidyverse)
 library(lubridate)
 
 #set directory to the Esslingen (ENVILOG) and the choosen Year
-setwd(paste0("O:/PROJEKT/NIEDER/LOGGER/ESSLINGN/FVA/Esslingen_Fichte_envilog/", vch.Year))
+path <- paste0("O:/PROJEKT/NIEDER/LOGGER/ESSLINGN/FVA/Esslingen_Fichte_envilog/", vch.Year)
+load("readEnvilog.R")
 #-----------------------------------------------------------------------------------
 #load all csv-file from directory
-tbl <- list.files(pattern = "*.csv")
+tbl <- list.files(path = path, pattern = "*.csv")
 # tbl <- tbl[-1]
 tbl <-  tbl %>%  map_df( ~read.csv2( ., skip=1,
                                      check.names=FALSE, na.strings = "(NOREPLY)",
@@ -43,7 +44,7 @@ tbl <-  tbl %>%  map_df( ~read.csv2( ., skip=1,
 str(tbl)
 
 #change format and comma to point in columns that were not load correctly
-tbl$'#17:°C KL:9:ID(60)' <- round(as.numeric(comtodot(tbl$'#17:°C KL:9:ID(60)')),2)
+tbl$'#17:?C KL:9:ID(60)' <- round(as.numeric(comtodot(tbl$'#17:?C KL:9:ID(60)')),2)
 tbl$'#18:pF KL:(do.):ID(60)' <- round(as.numeric(comtodot(tbl$'#18:pF KL:(do.):ID(60)')),2)
 
 # edit data, date time format, kick dublicated entries and filter for the choosen Year
@@ -79,7 +80,7 @@ head(tbl2)
 tail(tbl2)
 
 # Export data
-# erstelle ein zusammengefasste tabelle für das jeweilige jahr
+# erstelle ein zusammengefasste tabelle f?r das jeweilige jahr
 write.csv2(tbl2, file=paste0("ES_Level2FI_Envilog__", vch.Year,"_combine.csv"), quote = F, row.names = F, na = "")
 
 # Zum einlesen in die Level2 Datenbank, bitte folgendes beachten:
