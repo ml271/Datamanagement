@@ -1,8 +1,9 @@
 check_for_ts_gaps <- function(ts, max_diff, list=F){
   # 
   # #for testing
-  ts = dat$Datum
-  max_diff <- 24*60
+  # ts = dat$Datum
+  # #
+  # max_diff <- 24*60
 
   #conditions
   if(class(ts)[1] != "POSIXct"){
@@ -25,36 +26,43 @@ check_for_ts_gaps <- function(ts, max_diff, list=F){
   }
   # ts <- df.blau2$Dat_Zeit_utc
   # max_diff <- time
+  
   df <- data.frame(Dat_Zeit = ts)
+  
+  #clculate time differences of time step in minutes
   df$Dat_diff <- df$Dat_Zeit -lag(df$Dat_Zeit)
   units(df$Dat_diff) <- "mins"
   # table(df.alt$Dat_diff)
-  # maximale time acceptable time diff
-  i_l <- df$Dat_diff >= max_diff
-  i_l[1] <- TRUE
   
-  i_n <- lead(i_l)
+  
+  # maximale time acceptable time diff
+  # i_a = ANFANG DER LÜCKE
+  i_a <- df$Dat_diff >= max_diff
+  i_a[1] <- FALSE
+  
+  #i_n = ENDE DER LÜCKE
+  i_n <- lead(i_a)
+  i_n[length(i_n)] <- FALSE
   
   if( sum(i_n, na.rm=T) >= 1){
-      df.l <- df[i_l,]
+    print("Lücke gefunden:")
+      df.a <- df[i_a,]
       df.n <- df[i_n,]
-      df.luecke <- rbind(df.l, df.n) %>%  arrange(Dat_Zeit)
-      df.luecke$end <- df.luecke$Dat_diff >= max_diff
-      df.luecke$luecke <- rep(c("BEGIN", "END"), length.out= length(df.luecke$Dat_Zeit) )
-      df.luecke2 <- df.luecke[-length(df.luecke$luecke),]
-      df.luecke2$no_l <- rep(1:(length(df.luecke2$Dat_Zeit)/2), each=2)
-      df.luecke3 <- df.luecke2 %>% select(Dat_Zeit, Dat_diff, luecke, no_l)
+      df.gap <- rbind(df.a, df.n) %>%  arrange(Dat_Zeit)
+      #df.gap$end <- df.gap$Dat_diff >= max_diff
+      df.gap$luecke <- rep(c("BEGIN", "END"), length.out= length(df.gap$Dat_Zeit) )
+      #df.gap2 <- df.gap[-length(df.gap$luecke),]
+      df.gap$no_gap <- rep(1:(length(df.gap$Dat_Zeit)/2), each=2)
+      df.gap <- df.gap %>% select(Dat_Zeit, Dat_diff, luecke, no_gap)
           
-      # return
-      l.lck_alt <- split(df.luecke3,df.luecke3$no_l )
-      df.lck_alt <- rbindlist(l.lck_alt)
-      df.lck_alt$Dat_diff <- as.difftime(df.lck_alt$Dat_diff,units = "days" )
+      # reture
       
       if(list==T){
-        return(l.lck_alt)
+        l.gap_alt <- split(df.gap, df.gap$no_gap )
+        return(l.gap_alt)
       }
       
-      return(df.lck_alt)
+      return(df.gap)
   }
   else print("Keine Lücke gefunden!")
 }
