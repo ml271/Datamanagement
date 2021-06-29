@@ -26,12 +26,12 @@ source("functions/check_for_ts_gaps.R")
 source("functions/comtodot.R")
 source("functions/countna.R")
 
-#set directory to the Esslingen (ENVILOG) and the choosen Year
+#set directory to the Esslingen (ENVILOG) and the choosen year
 
 plot_name<- "Rotenfels"
 subplot_name <- "Fichte"
 # w?hle das jahr das zusammengefasst werden soll
-Year <- 2021
+year <- 2021
 path <- "O:/PROJEKT/NIEDER/LOGGER/ROTENFEL/Rotenfels_Fichte_Envilog/2021"
 LoggerExport = T # erzeugt eine Datei im path_out,
 # welche einer Loggerdatei des jeweilige Formats entspricht,
@@ -53,7 +53,7 @@ combi_rot_2021 <- combine_Envilog_files("O:/PROJEKT/NIEDER/LOGGER/ROTENFEL/Roten
 #-----------------------------------------------------------------------------------
 ### Initialies funktion to run
 
-combine_Envilog_files <- function(path, plot_name, subplot_name, Year = year(Sys.time()), LoggerExport = T, path_out = "W:/R/Datamanagement/data/", long_data =T){
+combine_Envilog_files <- function(path, plot_name, subplot_name, year = year(Sys.time()), LoggerExport = T, path_out = "W:/R/Datamanagement/data/", long_data =T){
   print(c(plot_name, subplot_name))
   
   abbr.plot <- substring(plot_name, 1,2)
@@ -87,13 +87,13 @@ combine_Envilog_files <- function(path, plot_name, subplot_name, Year = year(Sys
   # 4. check data consistency
   #table(dat$Kanäle)
   #--------------------------------------------------------------------------------------
-  # edit data, date time format, kick duplicated entries and filter for the choosen Year
+  # edit data, date time format, kick duplicated entries and filter for the choosen year
   dat1 <- 
     dat %>% arrange(Datum) %>%
     distinct(Datum, .keep_all= T) %>%
     #filter(!duplicated(dat$Datum)) %>%
-    filter(year(Datum) >= Year) %>% 
-    filter(year(Datum) < Year+1)
+    filter(year(Datum) >= year) %>% 
+    filter(year(Datum) < year+1)
   
   
   #create LÜCKE
@@ -107,8 +107,8 @@ combine_Envilog_files <- function(path, plot_name, subplot_name, Year = year(Sys
   print(paste("Es wurden Daten vom" , range(dat1$Datum, na.rm=T)[1], "bis zum", range(dat1$Datum, na.rm=T)[2], "gefunden und zusammengefasst"))
 
   # l <- unique(date(dat1$Datum))
-  # t <- seq.Date(from = ymd(paste0(Year, "-01-01")), to = ymd(paste0(Year, "-12-31")), by = 1)
-  # print(paste(" Von", length(t), "Tagen im Jahr", Year," wurden", sum(l == t), "aufeinanderfolgenden Tage zusammengefasst." ))# alle Tage vorhanden!
+  # t <- seq.Date(from = ymd(paste0(year, "-01-01")), to = ymd(paste0(year, "-12-31")), by = 1)
+  # print(paste(" Von", length(t), "Tagen im Jahr", year," wurden", sum(l == t), "aufeinanderfolgenden Tage zusammengefasst." ))# alle Tage vorhanden!
   
   ### CREATE LOGGER EXPORT FILE
   if (LoggerExport == T){
@@ -118,9 +118,9 @@ combine_Envilog_files <- function(path, plot_name, subplot_name, Year = year(Sys
       mutate(No = seq(1:nrow(.))) %>% select(No, everything())
     # Export data
     # erstelle ein zusammengefasste tabelle f?r das jeweilige jahr
-    writeLines("Logger: #D3000C 'Esslingen_Fi_FVA_1' - USP_EXP2 - (CGI) Expander for GP5W - (V2.60, Mai 12 2013)", paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_Envilog__", Year,"_combine.csv"))
-    suppressWarnings(write.table(dat_exp, file=paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_Envilog__", Year,"_combine.csv"), sep = ";", dec=",", col.names = TRUE, append= TRUE, quote = F, row.names = F, na = ""))
-    print(paste( "Es wurde eine Logger-Combi-Datei datei für das Jahr", Year, "erstellt und unter", path_out, "gespeichert."))
+    writeLines("Logger: #D3000C 'Esslingen_Fi_FVA_1' - USP_EXP2 - (CGI) Expander for GP5W - (V2.60, Mai 12 2013)", paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_Envilog__", year,"_combine.csv"))
+    suppressWarnings(write.table(dat_exp, file=paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_Envilog__", year,"_combine.csv"), sep = ";", dec=",", col.names = TRUE, append= TRUE, quote = F, row.names = F, na = ""))
+    print(paste( "Es wurde eine Logger-Combi-Datei datei für das Jahr", year, "erstellt und unter", path_out, "gespeichert."))
   }
   
   ### CREATE R DataFrame for further use
@@ -141,4 +141,4 @@ combine_Envilog_files <- function(path, plot_name, subplot_name, Year = year(Sys
 }# end of function+
 
 #testing funktion
-dat <- combine_Envilog_files(path=path, plot_name = plot_name, subplot_name = subplot_name, Year = Year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)
+dat <- combine_Envilog_files(path=path, plot_name = plot_name, subplot_name = subplot_name, year = year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)
