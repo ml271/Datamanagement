@@ -1,9 +1,10 @@
  ########################################################################
-######################   Combine ENVILOG #################################
+######################   Combine DeltaT #################################
  ########################################################################
 # autor: Marvin Lorff
 # date: 28.01.2021
 # version: 02.02
+
 
 
 # TODO: wirte some tests for input parameter and error/warnings
@@ -15,44 +16,46 @@
 
 
 # load functions and libraries
-
 library(tidyverse)
 library(lubridate)
-source("functions/readEnvilog.R")
+
+
+source("functions/readDeltaT.R")
 source("functions/check_for_ts_gaps.R")
 source("functions/comtodot.R")
 source("functions/countna.R")
+source("functions/write.fwf2.R")
 
-#set directory to the Esslingen (ENVILOG) and the choosen year
+#set directory to the Esslingen (DeltaT) and the choosen year
 # 
-# plot_name<- "Rotenfels"
-# subplot_name <- "Fichte"
+# plot_name<- "Esslingen"
+# subplot_name <- "Buche"
 # # w?hle das jahr das zusammengefasst werden soll
 # year <- 2021
-# path <- "O:/PROJEKT/NIEDER/LOGGER/ROTENFEL/Rotenfels_Fichte_Envilog/2021"
+# path <- "O:/PROJEKT/NIEDER/LOGGER/ESSLINGN/FVA/Esslingen_Buche_DeltaT/backup.dat/2021"
 # LoggerExport = T # erzeugt eine Datei im path_out,
 # # welche einer Loggerdatei des jeweilige Formats entspricht,
 # # und so über die Web oberfläche der Datenbank hochgeladen werden kann
 # path_out <- "W:/R/Datamanagement-2021data-edit/data/" # defriniert den outpath für die Loggerdatei
 # long_data <- T #  speichert die daten in R im "long-format"
-
+# 
 
 ### Initialies funktion to run
 
-combine_Envilog_files <- function(path, plot_name, subplot_name, year, LoggerExport = T, path_out, long_data =T){
+combine_DeltaT_files <- function(path, plot_name, subplot_name, year = year(Sys.time()), LoggerExport = T, path_out = "W:/R/Datamanagement/data/", long_data =T){
   print(c(plot_name, subplot_name))
   
   abbr.plot <- substring(plot_name, 1,2)
   abbr.sub <- substring(subplot_name, 1,2)
   #get all csv-file paths from directory
-  l.paths <- list.files(path = path, pattern = "*.csv", full.names = T)
+  l.paths <- list.files(path = path, pattern = "*.dat", full.names = T)
   if (length(l.paths)== 0){
     print("No Data found in directory or directory notexisting")
     stop()
   }
-  #gather data form files, use readEnvilog from LoggerImports
+  #gather data form files, use readDeltaT from LoggerImports
   #to make sure Sensors have identical and consistent colomns names
-  dat <- l.paths %>% map_df( ~ readEnvilog(.))
+  dat <- l.paths %>% map_df( ~ readDeltaT(.))
   #-----------------------------------------------------------------------------------
   ### Check Data
   # check time and other column classes
@@ -100,16 +103,30 @@ combine_Envilog_files <- function(path, plot_name, subplot_name, year, LoggerExp
   # t <- seq.Date(from = ymd(paste0(year, "-01-01")), to = ymd(paste0(year, "-12-31")), by = 1)
   # print(paste(" Von", length(t), "Tagen im Jahr", year," wurden", sum(l == t), "aufeinanderfolgenden Tage zusammengefasst." ))# alle Tage vorhanden!
   
+  # ### CREATE LOGGER EXPORT FILE
+  # if (LoggerExport == T){
+  #   # prepare data for export in Logger-format
+  #   dat_exp <- dat1 %>% 
+  #     mutate(Datum = format(dat1$Datum, format = "%d.%m.%Y %H:%M")) %>% 
+  #     mutate(No = seq(1:nrow(.))) %>% select(No, everything())
+  #   # Export data
+  #   # erstelle ein zusammengefasste tabelle f?r das jeweilige jahr
+  #   writeLines("Logger: #D3000C 'Esslingen_Fi_FVA_1' - USP_EXP2 - (CGI) Expander for GP5W - (V2.60, Mai 12 2013)", paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_DeltaT__", year,"_combine.csv"))
+  #   suppressWarnings(write.table(dat_exp, file=paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_DeltaT__", year,"_combine.csv"), sep = ";", dec=",", col.names = TRUE, append= TRUE, quote = F, row.names = F, na = ""))
+  #   print(paste( "Es wurde eine Logger-Combi-Datei datei für das Jahr", year, "erstellt und unter", path_out, "gespeichert."))
+  # }
+  # 
   ### CREATE LOGGER EXPORT FILE
   if (LoggerExport == T){
     # prepare data for export in Logger-format
     dat_exp <- dat1 %>% 
-      mutate(Datum = format(dat1$Datum, format = "%d.%m.%Y %H:%M")) %>% 
-      mutate(No = seq(1:nrow(.))) %>% select(No, everything())
+      mutate(Datum = format(dat1$Datum, format = "%d.%m. %H:%M"))
+     
+    
     # Export data
     # erstelle ein zusammengefasste tabelle f?r das jeweilige jahr
-    writeLines("Logger: #D3000C 'Esslingen_Fi_FVA_1' - USP_EXP2 - (CGI) Expander for GP5W - (V2.60, Mai 12 2013)", paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_Envilog__", year,"_combine.csv"))
-    suppressWarnings(write.table(dat_exp, file=paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_Envilog__", year,"_combine.csv"), sep = ";", dec=",", col.names = TRUE, append= TRUE, quote = F, row.names = F, na = ""))
+ 
+    write.fwf2(dat_exp, file=paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_DeltaT__", year,"_combine.dat"), year=year)
     print(paste( "Es wurde eine Logger-Combi-Datei datei für das Jahr", year, "erstellt und unter", path_out, "gespeichert."))
   }
   
@@ -131,5 +148,4 @@ combine_Envilog_files <- function(path, plot_name, subplot_name, year, LoggerExp
 }# end of function+
 
 #testing funktion
-#dat <- combine_Envilog_files(path=path, plot_name = plot_name, subplot_name = subplot_name, year = year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)
-
+#dat <- combine_DeltaT_files(path=path, plot_name = plot_name, subplot_name = subplot_name, year = year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)

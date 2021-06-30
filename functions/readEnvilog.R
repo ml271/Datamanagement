@@ -1,3 +1,4 @@
+
 #' Read data from an Envilog file in a usable form
 #'
 #' @param path A string as a path to the Envilog file
@@ -5,7 +6,7 @@
 readEnvilog <- function(path) {
     path <- iconv(path, to = "latin1")
     data <- data.frame(tryCatch(
-        read.csv(path, skip = 1, fileEncoding = "cp1258"),
+        read.csv2(path, skip = 1, fileEncoding = "cp1258"),
         error = function(e) read.csv2(path, skip = 1, fileEncoding = "cp1258"))) %>%
         select(-No) %>%
         filter(Time != "")
@@ -50,3 +51,4 @@ readEnvilog <- function(path) {
         mutate(across(where(is.character), as.numeric)) %>%
         data.table::as.data.table()
 }
+
