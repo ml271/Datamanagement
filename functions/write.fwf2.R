@@ -1,8 +1,11 @@
-# df <- dup_blau
-# year = 2020
-# file = "ALT_Bruhberg_altendatencombi.dat"
+ # df <- dat_exp
+ # year = 2020
+ # file = paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_DeltaT__", Year,"_combine.csv")
+ # 
+#--------------------------------
 library(stringr)
-
+library(gdata)
+#---------------------------------
 write.fwf2 <- function(df, file, year) {
   opts <- options(useFancyQuotes = FALSE)
   on.exit(options(opts))
@@ -10,8 +13,8 @@ write.fwf2 <- function(df, file, year) {
   a <- names(df)
   
   
-  b <- unname(sapply(df, function(x) max(nchar(x, type= "width"))))
-  c <- nchar(a, type = "width")
+  b <- unname(sapply(df, function(x) max(nchar(x, type= "width")))) # Breite der Werte
+  c <- nchar(a, type = "width") #Breiter der Header
   f <- b > c
   f[is.na(f)] <- FALSE
   e <- numeric()
@@ -24,7 +27,7 @@ write.fwf2 <- function(df, file, year) {
       e[i] <- c[i]
     )
   }
-  
+  e <- e+1
   aa <- str_pad(a, e, side= "left")
 # e[46] <- 8
 # e[46]
@@ -32,8 +35,8 @@ write.fwf2 <- function(df, file, year) {
 
   h1 <- "DELTA-T LOGGER"
   h2 <- "R-Nachbau der Loggerdateien, um Delta-T Dateien oder anderen Loggerdateiformate mit Flag-Splaten in die Level2 Datenbank hochzuladen. Autor:Marvin Lorff, Ausgabe durch Funktion: write.fwf2()"
-  h3 <- range(df$Dat_Zeit)[1]
-  h4 <- range(df$Dat_Zeit)[2]
+  h3 <- range(df$Datum)[1]
+  h4 <- range(df$Datum)[2]
   h5 <- paste("Start_Year:", year)
   h6 <- paste(c("Channel number", rep("", ncol(df))), collapse = ",")
   h7 <- paste(c("Sensor code",    rep("", ncol(df))), collapse = ",")
