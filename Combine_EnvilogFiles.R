@@ -16,7 +16,7 @@
 
 
 # load functions and libraries
-setwd("W:/R/Datamanagement")
+
 library(tidyverse)
 library(lubridate)
 
@@ -27,39 +27,32 @@ source("functions/comtodot.R")
 source("functions/countna.R")
 
 #set directory to the Esslingen (ENVILOG) and the choosen year
+# 
+# plot_name<- "Rotenfels"
+# subplot_name <- "Fichte"
+# # w?hle das jahr das zusammengefasst werden soll
+# year <- 2021
+# path <- "O:/PROJEKT/NIEDER/LOGGER/ROTENFEL/Rotenfels_Fichte_Envilog/2021"
+# LoggerExport = T # erzeugt eine Datei im path_out,
+# # welche einer Loggerdatei des jeweilige Formats entspricht,
+# # und so über die Web oberfläche der Datenbank hochgeladen werden kann
+# path_out <- "W:/R/Datamanagement-2021data-edit/data/" # defriniert den outpath für die Loggerdatei
+# long_data <- T #  speichert die daten in R im "long-format"
 
-plot_name<- "Rotenfels"
-subplot_name <- "Fichte"
-# w?hle das jahr das zusammengefasst werden soll
-year <- 2021
-path <- "O:/PROJEKT/NIEDER/LOGGER/ROTENFEL/Rotenfels_Fichte_Envilog/2021"
-LoggerExport = T # erzeugt eine Datei im path_out,
-# welche einer Loggerdatei des jeweilige Formats entspricht,
-# und so über die Web oberfläche der Datenbank hochgeladen werden kann
-path_out <- "W:/R/Datamanagement/data/" # defriniert den outpath für die Loggerdatei
-long_data <- T #  speichert die daten in R im "long-format"
 
-#-----------------------------------------------------------------------------------
-combi_ess_2021 <- combine_Envilog_files(path="O:/PROJEKT/NIEDER/LOGGER/ESSLINGN/FVA/Esslingen_Fichte_envilog/2021",
-                             plot_name ="Esslingen", subplot_name = "Fichte",
-                             LoggerExport = T, long_data = T, path_out = "W:/R/Datamanagement/data/")
-combi_och_2021 <- combine_Envilog_files("O:/PROJEKT/NIEDER/LOGGER/OCHS/Ochsenhausen_Fichte_ungedüngt_envilog/2021",
-                                        plot_name = "Ochsenhausen", subplot_name = "Fichte",
-                                        LoggerExport = T, long_data = T)
-combi_rot_2021 <- combine_Envilog_files("O:/PROJEKT/NIEDER/LOGGER/ROTENFEL/Rotenfels_Fichte_Envilog/2021",
-                                        plot_name = "Rotenfels", subplot_name = "Fichte",
-                                        LoggerExport = T, long_data = T)
-
-#-----------------------------------------------------------------------------------
 ### Initialies funktion to run
 
-combine_Envilog_files <- function(path, plot_name, subplot_name, year = year(Sys.time()), LoggerExport = T, path_out = "W:/R/Datamanagement/data/", long_data =T){
+combine_Envilog_files <- function(path, plot_name, subplot_name, year, LoggerExport = T, path_out, long_data =T){
   print(c(plot_name, subplot_name))
   
   abbr.plot <- substring(plot_name, 1,2)
   abbr.sub <- substring(subplot_name, 1,2)
   #get all csv-file paths from directory
   l.paths <- list.files(path = path, pattern = "*.csv", full.names = T)
+  if (length(l.paths)== 0){
+    print("No Data found in directory or directory notexisting")
+    stop()
+  }
   #gather data form files, use readEnvilog from LoggerImports
   #to make sure Sensors have identical and consistent colomns names
   dat <- l.paths %>% map_df( ~ readEnvilog(.))
@@ -141,4 +134,4 @@ combine_Envilog_files <- function(path, plot_name, subplot_name, year = year(Sys
 }# end of function+
 
 #testing funktion
-dat <- combine_Envilog_files(path=path, plot_name = plot_name, subplot_name = subplot_name, year = year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)
+#dat <- combine_Envilog_files(path=path, plot_name = plot_name, subplot_name = subplot_name, year = year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)

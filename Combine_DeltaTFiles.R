@@ -16,7 +16,6 @@
 
 
 # load functions and libraries
-setwd("W:/R/Datamanagement")
 library(tidyverse)
 library(lubridate)
 
@@ -28,37 +27,19 @@ source("functions/countna.R")
 source("functions/write.fwf2.R")
 
 #set directory to the Esslingen (DeltaT) and the choosen year
+# 
+# plot_name<- "Esslingen"
+# subplot_name <- "Buche"
+# # w?hle das jahr das zusammengefasst werden soll
+# year <- 2021
+# path <- "O:/PROJEKT/NIEDER/LOGGER/ESSLINGN/FVA/Esslingen_Buche_DeltaT/backup.dat/2021"
+# LoggerExport = T # erzeugt eine Datei im path_out,
+# # welche einer Loggerdatei des jeweilige Formats entspricht,
+# # und so über die Web oberfläche der Datenbank hochgeladen werden kann
+# path_out <- "W:/R/Datamanagement-2021data-edit/data/" # defriniert den outpath für die Loggerdatei
+# long_data <- T #  speichert die daten in R im "long-format"
+# 
 
-plot_name<- "Esslingen"
-subplot_name <- "Buche"
-# w?hle das jahr das zusammengefasst werden soll
-year <- 2020
-path <- "O:/PROJEKT/NIEDER/LOGGER/ESSLINGN/FVA/Esslingen_Buche_DeltaT/backup.dat/2020"
-LoggerExport = T # erzeugt eine Datei im path_out,
-# welche einer Loggerdatei des jeweilige Formats entspricht,
-# und so über die Web oberfläche der Datenbank hochgeladen werden kann
-path_out <- "W:/R/Datamanagement-2021data-edit/data/" # defriniert den outpath für die Loggerdatei
-long_data <- T #  speichert die daten in R im "long-format"
-
-#-----------------------------------------------------------------------------------
-combi_ess_bu_2020 <- combine_DeltaT_files(path="O:/PROJEKT/NIEDER/LOGGER/ESSLINGN/FVA/Esslingen_Buche_DeltaT/backup.dat/2020",
-                             plot_name ="Esslingen", subplot_name = "Buche", year= 2020,
-                             LoggerExport = T, long_data = T, path_out = "W:/R/Datamanagement-2021data-edit/data/")
-
-combi_ess_fi_2020 <- combine_DeltaT_files(path="O:/PROJEKT/NIEDER/LOGGER/ESSLINGN/FVA/Esslingen_Fichte_DeltaT/2020",
-                                       plot_name ="Esslingen", subplot_name = "Fichte", year= 2020,
-                                       LoggerExport = T, long_data = T, path_out = "W:/R/Datamanagement-2021data-edit/data/")
-
-
-combi_rot_2020 <- combine_DeltaT_files("O:/PROJEKT/NIEDER/LOGGER/ROTENFEL/Rotenfels_Fichte_DeltaT_neu/backup.dat/2020",
-                                         plot_name = "Rotenfels", subplot_name = "Fichte", year=2020,
-                                         LoggerExport = T, long_data = T, path_out = "W:/R/Datamanagement-2021data-edit/data/")
-
-combi_rot_2021 <- combine_DeltaT_files("O:/PROJEKT/NIEDER/LOGGER/OCHS/Ochsenhausen_Fichte_gedüngt_Delta_T/2020",
-                                        plot_name = "Ochsenhausen", subplot_name = "Fichte", year= 2020,
-                                        LoggerExport = T, long_data = T, path_out = "W:/R/Datamanagement-2021data-edit/data/")
-
-#-----------------------------------------------------------------------------------
 ### Initialies funktion to run
 
 combine_DeltaT_files <- function(path, plot_name, subplot_name, year = year(Sys.time()), LoggerExport = T, path_out = "W:/R/Datamanagement/data/", long_data =T){
@@ -68,6 +49,10 @@ combine_DeltaT_files <- function(path, plot_name, subplot_name, year = year(Sys.
   abbr.sub <- substring(subplot_name, 1,2)
   #get all csv-file paths from directory
   l.paths <- list.files(path = path, pattern = "*.dat", full.names = T)
+  if (length(l.paths)== 0){
+    print("No Data found in directory or directory notexisting")
+    stop()
+  }
   #gather data form files, use readDeltaT from LoggerImports
   #to make sure Sensors have identical and consistent colomns names
   dat <- l.paths %>% map_df( ~ readDeltaT(.))
@@ -141,7 +126,7 @@ combine_DeltaT_files <- function(path, plot_name, subplot_name, year = year(Sys.
     # Export data
     # erstelle ein zusammengefasste tabelle f?r das jeweilige jahr
  
-    write.fwf2(dat_exp, file=paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_DeltaT__", year,"_combine.csv"), year=2020)
+    write.fwf2(dat_exp, file=paste0(path_out, abbr.plot, "_Level2",abbr.sub, "_DeltaT__", year,"_combine.dat"), year=year)
     print(paste( "Es wurde eine Logger-Combi-Datei datei für das Jahr", year, "erstellt und unter", path_out, "gespeichert."))
   }
   
@@ -163,4 +148,4 @@ combine_DeltaT_files <- function(path, plot_name, subplot_name, year = year(Sys.
 }# end of function+
 
 #testing funktion
-dat <- combine_DeltaT_files(path=path, plot_name = plot_name, subplot_name = subplot_name, year = year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)
+#dat <- combine_DeltaT_files(path=path, plot_name = plot_name, subplot_name = subplot_name, year = year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)
