@@ -6,6 +6,7 @@
 # version: 02.02
 
 
+
 # TODO: wirte some tests for input parameter and error/warnings
 # TODO: load all plots/Subplots at once
 # TODO: für den subplot ochsenhausen Fichte ungdüngt werden die Sensor namen nicht umgeschrieben.
@@ -18,6 +19,8 @@
 
 library(tidyverse)
 library(lubridate)
+
+
 source("functions/readEnvilog.R")
 source("functions/check_for_ts_gaps.R")
 source("functions/comtodot.R")
@@ -132,4 +135,3 @@ combine_Envilog_files <- function(path, plot_name, subplot_name, year, LoggerExp
 
 #testing funktion
 #dat <- combine_Envilog_files(path=path, plot_name = plot_name, subplot_name = subplot_name, year = year, LoggerExport = LoggerExport, long_data = long_data, path_out = path_out)
-

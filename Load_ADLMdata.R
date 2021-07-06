@@ -11,19 +11,19 @@ library(lubridate)
 library(xlsx)
 library(tidyr)
 
-year <- 2021
-plot <- "Altensteig"
-subplot <- "Fichte"
-ExportLogger = TRUE
-long_data = TRUE
-path_out <- "W:/R/Datamanagement-2021data-edit/data/"
+# year <- 2021
+# plot_name <- "Ochsenhausen"
+# subplot_name <- "Freiland"
+# ExportLogger = TRUE
+# long_data = TRUE
+# path_out <- "W:/R/Datamanagement-2021data-edit/data/"
 
 load_ADLM_data <- function(year, plot_name, subplot_name, LoggerExport= T, long_data = T, path_out ="W:/R/Datamanagement-2021data-edit/data/"){ 
   
   print(c(plot_name, subplot_name))
   
-  abbr.plot <- substring(plot, 1,2)
-  abbr.sub <- substring(subplot, 1,2)
+  abbr.plot <- substring(plot_name, 1,2)
+  abbr.sub <- substring(subplot_name, 1,2)
   
   #connect to ADLM Database
   connect.adlm <- DBI::dbConnect(odbc::odbc(),
@@ -40,8 +40,21 @@ load_ADLM_data <- function(year, plot_name, subplot_name, LoggerExport= T, long_
   ADLM_DBO_CHANNELS <- dbGetQuery(
     connect.adlm,
     paste("SELECT * FROM adlmx.dbo.channels"))
+  
   STANDORT_NAMES <- unique(ADLM_DBO_CHANNELS$location)
   
+  # Theorie bestätigt, funktioniert.
+  # 
+  TMP_TIME_MIN <- format((as.numeric(as.POSIXct(paste0(year, "-01-01 00:00:00"),tz = "UTC"))*1000),scientific=FALSE)
+  TMP_TIME_MAX <- format((as.numeric(as.POSIXct(paste0(year, "-12-31 23:59:59"),tz = "UTC"))*1000),scientific=FALSE)
+  # 
+  # Db query für den vorherigen Tag zwischen 00:00:00 und 23:59:59 über ALLE Logger
+  #
+  TMP_ADLM_DBO_MEASUREMENTS <- dbGetQuery(
+    connect.adlm,
+    paste("SELECT * FROM adlmx.dbo.measurements where unixtime >= ",TMP_TIME_MIN,"and unixtime <= ", TMP_TIME_MAX))
+  
+  #load blacklist
   BLACKLIST <- read.csv(
     paste("./BLACKLIST_StandorteADLM.csv", sep = ""),
     sep = ";",
@@ -63,9 +76,13 @@ load_ADLM_data <- function(year, plot_name, subplot_name, LoggerExport= T, long_
   TMP_STANDORT_IDENT <- filter(ADLM_DBO_CHANNELS, ADLM_DBO_CHANNELS$location == adlm_sta_flae)
   TMP_MEASUREMENTS <- subset(TMP_ADLM_DBO_MEASUREMENTS, channelid %in% TMP_STANDORT_IDENT$id)
   
-  if(nrow(TMP_MEASUREMENTS) == "0"){
-    next
-  }
+  stopifnot(nrow(TMP_MEASUREMENTS) != "0")
+  # 
+  # if(nrow(TMP_MEASUREMENTS) == "0"){
+  #   #next
+  #   #stop()
+  #   exit()
+  # }
   # Leere Vectoren erzeugen
   TMP_FLAECHE = 1:nrow(TMP_MEASUREMENTS)  #ADLM_DBO_CHANNELS$location
   TMP_TIME = as.POSIXct(TMP_MEASUREMENTS$unixtime/1000, origin="1970-01-01",tz="UTC")
@@ -104,8 +121,8 @@ load_ADLM_data <- function(year, plot_name, subplot_name, LoggerExport= T, long_
   TMP_MEASUREMENTS_AUSGABE <- TMP_MEASUREMENTS_AUSGABE[order(TMP_MEASUREMENTS_AUSGABE$unixtime),]
   
   # now this is a normal dataframe again
-  dat <- TMP_MEASUREMENTS_AUSGABE %>% select(-c(unixtime, id, flaeche, einheit)) %>%
-    mutate( plot = plot, subplot = subplot)
+  dat <- TMP_MEASUREMENTS_AUSGABE %>% select(-c(unixtime, id, flaeche, einheit)) #%>%
+    #mutate( plot = plot, subplot = subplot)
   
   dat <- dat %>%  pivot_wider(id_cols = time,names_from = sensor, values_from = wert_num ) %>%  rename(Datum = time)
   names(dat) <- gsub( " ", "_", names(dat)) 
@@ -140,7 +157,7 @@ load_ADLM_data <- function(year, plot_name, subplot_name, LoggerExport= T, long_
     head <- head[, names(dat_exp)]
     
     if(sum(names(head) != names(dat_exp)) != 0){
-      quit()
+      stop()
     }
     # Export data
     # erstelle ein zusammengefasste tabelle f?r das jeweilige jahr
@@ -174,6 +191,10 @@ load_ADLM_data <- function(year, plot_name, subplot_name, LoggerExport= T, long_
     )
     
   }
+
+
   
 #testing
-tmp <- load_ADLM_data(year=year, plot=plot, subplot=subplot, LoggerExport= T, long_data = T)
+#tmp <- load_ADLM_data(year= year, plot_name = plot_name, subplot_name = subplot_name)
+#tmp <- load_ADLM_data(year= 2021, plot_name = "Altensteig", subplot_name = "Buche", LoggerExport = T)
+#tmp <- load_ADLM_data(year=year, plot=plot, subplot=subplot, LoggerExport= T, long_data = T)

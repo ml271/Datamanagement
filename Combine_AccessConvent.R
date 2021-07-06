@@ -25,6 +25,8 @@ source("functions/write.fwf2.R")
 extract_Access_data <- function(path_db ="O:/PROJEKT/CONVENT/LOGDATEN/DBDAT/Conventwald", dl_table, year, with_flags, path_out, ExportLogger=T, long_data=T ){
   abbr.plot <- "CO"
   abbr.subplot <- substring(dl_table,1 ,3)
+  plot_name <- "Conventwald"
+  subplot_name <- dl_table
   ## open connection
   rodbc.connect <- odbcConnectAccess(path_db, DBMSencoding = "latin1")
   
