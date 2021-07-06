@@ -1,4 +1,3 @@
-
 #' Read data from an Envilog file in a usable form
 #'
 #' @param path A string as a path to the Envilog file
@@ -51,4 +50,3 @@ readEnvilog <- function(path) {
         mutate(across(where(is.character), as.numeric)) %>%
         data.table::as.data.table()
 }
-

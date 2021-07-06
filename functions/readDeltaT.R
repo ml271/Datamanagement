@@ -54,4 +54,3 @@ readDeltaT <- function(deltaT_dat_path) {
     first_new_year_element_index <- which(time_differences_in_seconds < -31500000)
     return(first_new_year_element_index)
 }
-

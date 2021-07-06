@@ -1,0 +1,70 @@
+Eintrag_ADLM;Blacklist;Station_Flaeche
+Altensteig 1;n;Altensteig_Freiland
+Altensteig_Bu 1;n;Altensteig_Buche
+Altensteig_Fi 1;n;Altensteig_Fichte
+Baiersbronn mitte 1;y;
+Baiersbronn oben 1;y;
+Baiersbronn unten 1;y;
+Baiersbronn_Mitte 1;y;
+Baiersbronn_oben 1;y;
+Baiersbronn_Unten 1;y;
+Berau_Flaechenschutz 1;y;
+Biberach 1;y;
+BiberachBoreal 1;y;
+Blauen 1;n;Blauen_Freiland
+Buggenried 1;y;
+Convent_Freiland_Referenz 1;n;Conventwald_Freiland
+Convent_PF_Meter 1;n;Conventwald_Fichte
+Conventwald_Turm 1;n;Conventwald_Turm
+Ebnet_Grafenhausen 1;y;
+Ebringen_Weinbau 1;y;
+Esslingen 1;n;Esslingen_Freiland
+Esslingen_Bu_ 1;n;Esslingen_Buche
+Esslingen_PF_Meter 1;n;Esslingen_Fichte
+Faulenfuerst 1;y;
+Feldberg 1;y;
+FR_Herdern_Weinbau 1;y;
+FR_Jesuitenschloss_Weinbau 1;y;
+FR_Wonnhalde_Weinbau 1;y;
+FVA_Garten_11_2016 1;y;
+FVA_Garten01 1;y;
+Hardtheim_Wind_Methan 1;y;
+Heidelberg_Bu 1;n;Heidelberg_Buche1
+Heidelberg_Bu 2;n;Heidelberg_Buche2
+Heidelberg_Fi 1;n;Heidelberg_Fichte
+Heidelberg_Freiland 1;n;Heidelberg_Freiland
+Hockenheim_Freiland 1;n;Hockenheim_Freiland
+Holzschlaegermatte 1;y;
+IHR_Doktorhaus_Weinbau 1;y;
+IPS_Pro1Sommerhang 1;y;
+IPS_ProV02 1;y;
+IpsPro2_Winterhang 1;y;
+Jaegerbrunnen_Wonn 1;y;
+Langenbach 1;y;
+Moormonitoring Diana 1;y;
+Mudau 1;n;Mudau_Freiland
+NoNameWS 1;y;
+Oberer_Haller 1;y;
+Oberes Ried Moor 1;y;
+Ochs_PF_Meter 1;n;Ochsenhausen_Fichte
+Ochsenhausen 1;n;Ochsenhausen_Freiland
+Ochsenhausen_Bu 1;n;Ochsenhausen_Buche
+Ochsenhausen_Fichte_geduengt_ADLM 1;n;Ochsenhausen_Fichtegeduengt
+Ochsenschlag 1;y;
+Pluviograph_FVA 1;y;
+Ravensburg 1;y;
+Rosenfeld 1;n;Rosenfeld_Freiland
+Rotenfels 1;n;Rotenfels_Freiland
+Stollenhuette 1;y;
+Testbetrieb_FVA 1;y;
+Tuttlingen 1;n;Tuttlingen_Freiland
+Waldkirch_Engewald 1;y;
+Waldschutz Windrichtung Windgeschwindigkeit 1;y;
+Welzheim 1;n;Welzheim_Freiland
+WiNo_Birkenfeld 1;y;
+Wolfsboden_Aufwand 1;y;
+Wolfsboden_Wirkdauer 1;y;
+Wonnhalde 1;y;
+Zipfelweg 1;y;
+Zwickgabel 1;y;
+Neue Stationen muessen dem Ordner Schema entsprechen;y;
