@@ -133,9 +133,9 @@ combine_DeltaT_files <- function(path, plot_name, subplot_name, year = year(Sys.
   ### CREATE R DataFrame for further use
   if (long_data == T){
     # prepare data in R-Format
-    dat_long <- dat1 %>% pivot_longer(. , cols= -Datum,  names_to = "value", values_to = "messwert") %>% 
-      mutate(plot = plot_name, subplot = subplot_name) %>% 
-      select(Datum, plot, subplot, messwert, value)
+    dat_long <- dat1 %>% pivot_longer(. , cols= -Datum,  names_to = "variable", values_to = "value") %>% 
+      mutate(Plot = plot_name, SubPlot = subplot_name) %>% 
+      select(Plot, SubPlot, Datum, variable, value)
     return(dat_long)
   }
   else(

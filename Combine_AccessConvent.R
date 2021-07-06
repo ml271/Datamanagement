@@ -22,9 +22,11 @@ source("functions/write.fwf2.R")
 
 ######################################################################################
 
-extract_Access_data <- function(path_db ="O:/PROJEKT/CONVENT/LOGDATEN/DBDAT/Conventwald", dl_table, year, with_flags, path_out ){
+extract_Access_data <- function(path_db ="O:/PROJEKT/CONVENT/LOGDATEN/DBDAT/Conventwald", dl_table, year, with_flags, path_out, ExportLogger=T, long_data=T ){
   abbr.plot <- "CO"
   abbr.subplot <- substring(dl_table,1 ,3)
+  plot_name <- "Conventwald"
+  subplot_name <- dl_table
   ## open connection
   rodbc.connect <- odbcConnectAccess(path_db, DBMSencoding = "latin1")
   
@@ -72,7 +74,17 @@ For Conventwald.mdb it has to be one of DL1_BTA1, DL2_BFI2, DL3_WFI2, DL4_WFI4, 
   write.fwf2(dat, file = paste0(path_out, abbr.plot,"_", abbr.subplot, "_Access__", year,"_combine.dat"), year = year)
   print(paste( "Es wurde eine Logger-Combi-Datei datei für das Jahr", year, "erstellt und unter", path_out, "gespeichert."))
   
-  return(dat)
+  ### CREATE R DataFrame for further use
+  if (long_data == T){
+    # prepare data in R-Format
+    dat_long <- dat %>% pivot_longer(. , cols= -Datum,  names_to = "variable", values_to = "value") %>% 
+      mutate(Plot = plot_name, SubPlot = subplot_name) %>% 
+      select(Plot, SubPlot, Datum, variable, value)
+    return(dat_long)
+  }
+  else(
+    return(dat)
+  )
 }
 
 #testing
