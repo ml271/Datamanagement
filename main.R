@@ -6,7 +6,11 @@
 # version: 02.02
 
 # TODO: Getting Git Push to work from FVA
+# HIPPI E THIS WORKS NOW
 
+#git add .
+#git commit -m"test2"
+#git push
 
 # load functions and libraries
 library(tidyverse)
