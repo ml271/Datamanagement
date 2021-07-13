@@ -5,21 +5,23 @@ library(xlsx)
 library(gdata)
 library(RODBC)
 library(LoggerImports)
-# int.Year <- 2020 # specify year of interesst
+library(stringr)
 
 #try odbc connection to acces db
-
+# 
 # path_db <- "O:/PROJEKT/CONVENT/LOGDATEN/DBDAT/Conventwald"
 # dl_table <- "DL1_BTA1"
 # with_flags <- FALSE
 # 
-# path_out <- "W:/R/Datamanagement-2021data-edit/data/"
+# path_out <- "W:/R/Datamanagement/data/"
 # year <- 2021
 
 source("functions/check_for_ts_gaps.R")
 source("functions/deleteColumnsNa.R")
 source("functions/write.fwf2.R")
 
+
+#TODO: fix Datum  output of function to match datetime
 ######################################################################################
 
 extract_Access_data <- function(path_db ="O:/PROJEKT/CONVENT/LOGDATEN/DBDAT/Conventwald", dl_table, year, with_flags, path_out, ExportLogger=T, long_data=T ){
@@ -63,7 +65,7 @@ For Conventwald.mdb it has to be one of DL1_BTA1, DL2_BFI2, DL3_WFI2, DL4_WFI4, 
   
   #delete columns iwth only Na values, and drop coulumns by names
   dat <- delt_col_only_na(dat) %>%  select( -any_of(c("cobunord","cobusost","cobuswes", "cofisued", "cofinord", "Proto_Dat", "Temp_898", "Temp_881", "Temp_899"))) %>%  select(-contains("Kanäle"))
- 
+  
   # get flag coulmns
   if( with_flags == FALSE){
     dat <- dat[,-grep("x_", names(dat))]
@@ -74,16 +76,23 @@ For Conventwald.mdb it has to be one of DL1_BTA1, DL2_BFI2, DL3_WFI2, DL4_WFI4, 
   write.fwf2(dat, file = paste0(path_out, abbr.plot,"_", abbr.subplot, "_Access__", year,"_combine.dat"), year = year)
   print(paste( "Es wurde eine Logger-Combi-Datei datei für das Jahr", year, "erstellt und unter", path_out, "gespeichert."))
   
+  
+  dat1 <- dat %>%
+    mutate(Datum = paste0(year,"/", dat$Datum)) %>% 
+    mutate(Datum = ydm_hms(Datum)) %>% 
+    arrange(Datum) 
+  
+  paste0(year,"/", dat$Datum)
   ### CREATE R DataFrame for further use
   if (long_data == T){
     # prepare data in R-Format
-    dat_long <- dat %>% pivot_longer(. , cols= -Datum,  names_to = "variable", values_to = "value") %>% 
+    dat_long <- dat1 %>% pivot_longer(. , cols= -Datum,  names_to = "variable", values_to = "value") %>% 
       mutate(Plot = plot_name, SubPlot = subplot_name) %>% 
       select(Plot, SubPlot, Datum, variable, value)
     return(dat_long)
   }
   else(
-    return(dat)
+    return(dat1)
   )
 }
 

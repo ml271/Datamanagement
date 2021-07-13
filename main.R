@@ -2,15 +2,9 @@
 ######################   Main Datamanagement #################################
 ########################################################################
 # autor: Marvin Lorff
-# date: 28.01.2021
-# version: 02.02
+# date: 07.07.2021
+# version: 02.50
 
-# TODO: Getting Git Push to work from FVA
-# HIPPI E THIS WORKS NOW
-
-#git add .
-#git commit -m"test2"
-#git push
 
 # load functions and libraries
 library(tidyverse)
@@ -50,17 +44,17 @@ oc_fidue_DeltaT_2021    <- combine_DeltaT_files("O:/PROJEKT/NIEDER/LOGGER/OCHS/O
                                           LoggerExport = T, long_data = T, path_out = "W:/R/Datamanagement-2021data-edit/data/")
 
 #-----------------------------------------------------------------------------------
-co_dl1_2021 <- extract_Access_data(dl_table = "DL1_BTA1", year=2021, with_flags= F, path_out= "W:/R/Datamanagement-2021data-edit/data/")
+co_dl1_2021 <- extract_Access_data(dl_table = "DL1_BTA1", year=2021, with_flags= F, path_out= "W:/R/Datamanagement/data/")
 
-co_dl2_2021 <- extract_Access_data(dl_table = "DL2_BFI2", year=2021, with_flags= F, path_out= "W:/R/Datamanagement-2021data-edit/data/")
+co_dl2_2021 <- extract_Access_data(dl_table = "DL2_BFI2", year=2021, with_flags= F, path_out= "W:/R/Datamanagement/data/")
 
-co_dl3_2021 <- extract_Access_data(dl_table = "DL3_WFI2", year=2021, with_flags= F, path_out= "W:/R/Datamanagement-2021data-edit/data/")
+co_dl3_2021 <- extract_Access_data(dl_table = "DL3_WFI2", year=2021, with_flags= F, path_out= "W:/R/Datamanagement/data/")
 
-co_dl4_2021 <- extract_Access_data(dl_table = "DL4_WFI4", year=2021, with_flags= F, path_out= "W:/R/Datamanagement-2021data-edit/data/")
+co_dl4_2021 <- extract_Access_data(dl_table = "DL4_WFI4", year=2021, with_flags= F, path_out= "W:/R/Datamanagement/data/")
 
-#co_dl5_2001 <- extract_Access_data(dl_table = "DL5_WFEN", year=2021, with_flags= F, path_out= "W:/R/Datamanagement-2021data-edit/data/")
+#co_dl5_2001 <- extract_Access_data(dl_table = "DL5_WFEN", year=2021, with_flags= F, path_out= "W:/R/Datamanagement/data/")
 
-co_dl6_2021 <- extract_Access_data(dl_table = "DL6_BBU5", year=2021, with_flags= F, path_out= "W:/R/Datamanagement-2021data-edit/data/")
+co_dl6_2021 <- extract_Access_data(dl_table = "DL6_BBU5", year=2021, with_flags= F, path_out= "W:/R/Datamanagement/data/")
 #-----------------------------------------------------------------------------------
 # Possible entries for ADLM data requests
 BLACKLIST <- read.csv(
@@ -93,4 +87,6 @@ save.image(file = "my2021data.Rdata")
 #system('shutdown -s')
 load("my2021data.Rdata")
 rm(list=ls(all.names = T))
+
+ls(all.names = T)
 
